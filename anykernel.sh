@@ -12,6 +12,7 @@ do.cleanup=1
 do.cleanuponabort=0
 device.name1=selene
 device.name2=selenes
+device.name3=eos
 supported.versions=
 supported.patchlevels=
 '; } # end properties
