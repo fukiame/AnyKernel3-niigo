@@ -541,7 +541,9 @@ if [ -f banner ]; then
 fi;
 
 KERNEL_STRING="$(file_getprop anykernel.sh kernel.string)";
-ui_print "$KERNEL_STRING";
+if [ ! -z "$KERNEL_STRING" ]; then
+  ui_print "$KERNEL_STRING";
+fi
 if [ -f version ]; then
   ui_print " ";
   ui_printfile version;
