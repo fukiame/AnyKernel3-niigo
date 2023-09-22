@@ -479,8 +479,8 @@ ui_print " ";
 setup_env;
 
 do_devicecheck;
-do_versioncheck;
-do_levelcheck;
+#do_versioncheck;
+#do_levelcheck;
 
 ui_print "Installing...";
 CORE=$($BB grep -oE 'ak.*core.sh' anykernel.sh);
