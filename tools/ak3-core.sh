@@ -399,7 +399,7 @@ flash_boot() {
           magisk_patched=$?;
         fi;
         if [ "$magisk_patched" == 1 ]; then
-          ui_print " " "Magisk detected! Patching kernel so reflashing Magisk is not necessary...";
+          ui_print " " "patching want_initramfs for Magisk...";
           comp=$(magiskboot decompress kernel 2>&1 | grep -vE 'raw|zimage' | sed -n 's;.*\[\(.*\)\];\1;p');
           (magiskboot split $kernel || magiskboot decompress $kernel kernel) >&2;
           if [ $? != 0 -a "$comp" ] && $comp --help 2>/dev/null; then
