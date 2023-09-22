@@ -541,7 +541,6 @@ export PATH="$AKHOME/tools:$AKHOME/bin:$PATH";
 
 if [ -f banner ]; then
   ui_printfile banner;
-  ui_print " " " ";
 fi;
 
 KERNEL_STRING="$(file_getprop anykernel.sh kernel.string)";
@@ -551,7 +550,7 @@ if [ -f version ]; then
   ui_printfile version;
   ui_print " ";
 fi;
-ui_print " " "AnyKernel3 by osm0sis @ xda-developers" " ";
+ui_print " " "AnyKernel3 by osm0sis @ xda-developers";
 grep -oE 'AK_BASE.*' META-INF/com/google/android/updater-script >&2;
 ui_print " ";
 
@@ -581,6 +580,6 @@ if [ "$(file_getprop anykernel.sh do.cleanup)" == 1 ]; then
   cleanup;
 fi;
 
-ui_print " " "Done!";
+ui_print " " "done";
 export PATH="$OLD_PATH";
 unset OLD_PATH OUTFD ZIPFILE;
