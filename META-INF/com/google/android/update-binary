@@ -292,7 +292,7 @@ abort() {
 do_devicecheck() {
   [ "$(file_getprop anykernel.sh do.devicecheck)" == 1 ] || return 1;
   local device devicename match product testname vendordevice vendorproduct;
-  ui_print "Checking device...";
+  # ui_print "Checking device...";
   device=$(getprop ro.product.device 2>/dev/null);
   product=$(getprop ro.build.product 2>/dev/null);
   vendordevice=$(getprop ro.product.vendor.device 2>/dev/null);
@@ -300,14 +300,14 @@ do_devicecheck() {
   for testname in $(grep '^device.name.*=' anykernel.sh | cut -d= -f2-); do
     for devicename in $device $product $vendordevice $vendorproduct; do
       if [ "$devicename" == "$testname" ]; then
-        ui_print "$testname" " ";
+        # ui_print "$testname" " ";
         match=1;
         break 2;
       fi;
     done;
   done;
   if [ ! "$match" ]; then
-    abort " " "Unsupported device. Aborting...";
+    abort " " "unsupported device, aborting...";
   fi;
 }
 int2ver() {
@@ -557,11 +557,11 @@ ui_print " ";
 setup_env;
 
 do_devicecheck;
-do_versioncheck;
-do_levelcheck;
-do_vendorlevelcheck;
+#do_versioncheck;
+#do_levelcheck;
+#do_vendorlevelcheck;
 
-ui_print "Installing...";
+ui_print "installing...";
 # hack to maintain support for anykernel.sh files that weren't updated correctly along with the AK core
 CORE=$(grep -oE 'ak.*core.sh' anykernel.sh);
 [ -f tools/$CORE ] || ln -s $AKHOME/tools/ak*-core.sh $AKHOME/tools/$CORE;
@@ -570,16 +570,16 @@ if [ $? != 0 ]; then
   abort;
 fi;
 
-do_modules;
+#do_modules;
 
-debugging;
-ui_print " ";
+#debugging;
+#ui_print " ";
 restore_env;
 
 if [ "$(file_getprop anykernel.sh do.cleanup)" == 1 ]; then
   cleanup;
 fi;
 
-ui_print " " "done";
+ui_print " " "done" " ";
 export PATH="$OLD_PATH";
 unset OLD_PATH OUTFD ZIPFILE;
