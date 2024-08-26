@@ -425,7 +425,7 @@ flash_boot() {
 
 # flash_generic <name>
 flash_generic() {
-  local avb avbblock avbpath file flags img imgblock imgsz isro isunmounted path;
+  local avb avbblock avbpath file flags img imgblock isro isunmounted path;
 
   cd $AKHOME;
   for file in $1 $1.img; do
