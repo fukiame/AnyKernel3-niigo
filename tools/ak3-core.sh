@@ -501,37 +501,6 @@ flash_generic() {
           cd $AKHOME;
         fi
       fi
-      imgsz=$(wc -c < $img);
-      if [ "$imgsz" != "$(wc -c < $imgblock)" ]; then
-        if [ -d /postinstall/tmp -a "$SLOT_SELECT" == "inactive" ]; then
-          echo "Resizing $1$SLOT snapshot..." >&2;
-          snapshotupdater_static update $1 $imgsz || abort "Resizing $1$SLOT snapshot failed. Aborting...";
-        else
-          echo "Removing any existing $1_ak3..." >&2;
-          lptools_static remove $1_ak3;
-          echo "Clearing any merged cow partitions..." >&2;
-          lptools_static clear-cow;
-          echo "Attempting to create $1_ak3..." >&2;
-          if lptools_static create $1_ak3 $imgsz; then
-            echo "Replacing $1$SLOT with $1_ak3..." >&2;
-            lptools_static unmap $1_ak3 || abort "Unmapping $1_ak3 failed. Aborting...";
-            lptools_static map $1_ak3 || abort "Mapping $1_ak3 failed. Aborting...";
-            lptools_static replace $1_ak3 $1$SLOT || abort "Replacing $1$SLOT failed. Aborting...";
-            imgblock=/dev/block/mapper/$1_ak3;
-            ui_print " " "Warning: $1$SLOT replaced in super. Reboot before further logical partition operations.";
-          else
-            echo "Creating $1_ak3 failed. Attempting to resize $1$SLOT..." >&2;
-            httools_static umount $1 || abort "Unmounting $1 failed. Aborting...";
-            if [ -e $path/$1-verity ]; then
-              lptools_static unmap $1-verity || abort "Unmapping $1-verity failed. Aborting...";
-            fi
-            lptools_static unmap $1$SLOT || abort "Unmapping $1$SLOT failed. Aborting...";
-            lptools_static resize $1$SLOT $imgsz || abort "Resizing $1$SLOT failed. Aborting...";
-            lptools_static map $1$SLOT || abort "Mapping $1$SLOT failed. Aborting...";
-            isunmounted=1;
-          fi
-        fi
-      fi
     elif [ "$(wc -c < $img)" -gt "$(wc -c < $imgblock)" ]; then
       abort "New $1 image larger than $1 partition. Aborting...";
     fi;
@@ -566,10 +535,6 @@ flash_dtbo() { flash_generic dtbo; }
 write_boot() {
   repack_ramdisk;
   flash_boot;
-  flash_generic vendor_boot; # temporary until hdr v4 can be unpacked/repacked fully by magiskboot
-  flash_generic vendor_kernel_boot; # temporary until hdr v4 can be unpacked/repacked fully by magiskboot
-  flash_generic vendor_dlkm;
-  flash_generic system_dlkm;
   flash_generic dtbo;
 }
 ###
