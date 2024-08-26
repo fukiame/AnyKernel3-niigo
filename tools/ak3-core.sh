@@ -7,7 +7,6 @@
 [ "$AKHOME" ] || AKHOME=$PWD;
 BOOTIMG=$AKHOME/boot.img;
 BIN=$AKHOME/tools;
-PATCH=$AKHOME/patch;
 RAMDISK=$AKHOME/ramdisk;
 SPLITIMG=$AKHOME/split_img;
 
@@ -168,7 +167,6 @@ unpack_ramdisk() {
     fi;
   fi;
 
-  [ -d $RAMDISK ] && mv -f $RAMDISK $AKHOME/rdtmp;
   mkdir -p $RAMDISK;
   chmod 755 $RAMDISK;
 
@@ -637,42 +635,6 @@ remove_line() {
   fi;
 }
 
-# prepend_file <file> <if search string> <patch file>
-prepend_file() {
-  if ! grep -q "$2" $1; then
-    echo "$(cat $PATCH/$3 $1)" > $1;
-  fi;
-}
-
-# insert_file <file> <if search string> <before|after> <line match string> <patch file>
-insert_file() {
-  local offset line;
-  if ! grep -q "$2" $1; then
-    case $3 in
-      before) offset=0;;
-      after) offset=1;;
-    esac;
-    line=$((`grep -n -m1 "$4" $1 | cut -d: -f1` + offset));
-    sed -i "${line}s;^;\n;" $1;
-    sed -i "$((line - 1))r $PATCH/$5" $1;
-  fi;
-}
-
-# append_file <file> <if search string> <patch file>
-append_file() {
-  if ! grep -q "$2" $1; then
-    echo -ne "\n" >> $1;
-    cat $PATCH/$3 >> $1;
-    echo -ne "\n" >> $1;
-  fi;
-}
-
-# replace_file <file> <permissions> <patch file>
-replace_file() {
-  cp -pf $PATCH/$3 $1;
-  chmod $2 $1;
-}
-
 # patch_fstab <fstab file> <mount match name> <fs match type> block|mount|fstype|options|flags <original string> <replacement string>
 patch_fstab() {
   local entry part newpart newentry;
@@ -764,7 +726,7 @@ reset_ak() {
   if [ "$1" == "keep" ]; then
     [ -d $AKHOME/rdtmp ] && mv -f $AKHOME/rdtmp $RAMDISK;
   else
-    rm -rf $PATCH $AKHOME/rdtmp;
+    rm -rf $AKHOME/rdtmp;
   fi;
   if [ ! "$NO_BLOCK_DISPLAY" ]; then
     ui_print " ";
@@ -905,7 +867,7 @@ setup_ak() {
   
   # allow multi-partition ramdisk modifying configurations (using reset_ak)
   name=$(basename $BLOCK | sed -e 's/_a$//' -e 's/_b$//');
-  if [ "$BLOCK" ] && [ ! -d "$RAMDISK" -a ! -d "$PATCH" ]; then
+  if [ "$BLOCK" ] && [ ! -d "$RAMDISK" ]; then
     blockfiles=$AKHOME/$name-files;
     if [ "$(ls $blockfiles 2>/dev/null)" ]; then
       cp -af $blockfiles/* $AKHOME;
