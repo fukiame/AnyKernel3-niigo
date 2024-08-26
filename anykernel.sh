@@ -6,7 +6,6 @@
 properties() { '
 kernel.string=
 do.devicecheck=1
-do.modules=0
 do.systemless=1
 do.cleanup=1
 do.cleanuponabort=0
@@ -17,8 +16,6 @@ device.name4=angelicain
 device.name5=cattail
 device.name6=blossom
 supported.versions=
-supported.patchlevels=
-supported.vendorpatchlevels=
 '; } # end properties
 
 
