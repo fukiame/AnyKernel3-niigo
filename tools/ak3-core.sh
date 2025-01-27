@@ -212,8 +212,10 @@ repack_ramdisk() {
 
   cd $home;
   $bin/magiskboot cpio ramdisk-new.cpio test;
-  magisk_patched=$?;
-  [ $((magisk_patched & 3)) -eq 1 ] && $bin/magiskboot cpio ramdisk-new.cpio "extract .backup/.magisk $split_img/.magisk";
+  if ! [ "$(file_getprop $home/anykernel.sh do.skipmagisk)" == 1 ]; then
+    magisk_patched=$?;
+    [ $((magisk_patched & 3)) -eq 1 ] && $bin/magiskboot cpio ramdisk-new.cpio "extract .backup/.magisk $split_img/.magisk";
+  fi
   if [ "$comp" ]; then
     $bin/magiskboot compress=$comp ramdisk-new.cpio;
     if [ $? != 0 ] && $comp --help 2>/dev/null; then
@@ -314,6 +316,7 @@ flash_boot() {
     done;
     case $kernel in
       *Image*)
+        if ! [ "$(file_getprop $home/anykernel.sh do.skipmagisk)" == 1 ]; then
         if [ ! "$magisk_patched" ]; then
           $bin/magiskboot cpio ramdisk.cpio test;
           magisk_patched=$?;
@@ -349,6 +352,11 @@ flash_boot() {
             *-dtb) rm -f kernel_dtb;;
           esac;
         fi;
+        else
+          case $kernel in
+            *-dtb) rm -f kernel_dtb;;
+          esac;
+        fi
         unset magisk_patched KEEPVERITY KEEPFORCEENCRYPT RECOVERYMODE PREINITDEVICE SHA1 RANDOMSEED; # leave PATCHVBMETAFLAG set for repack
       ;;
     esac;
